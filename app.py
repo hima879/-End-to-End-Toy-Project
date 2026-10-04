@@ -1,21 +1,18 @@
-# app.py
 import streamlit as st
-import numpy as np
-import pickle
+import pandas as pd
+from sklearn.linear_model import LogisticRegression
 
-# Page config
-st.set_page_config(
-    page_title="Placement Predictor",
-    page_icon="🎓",
-    layout="centered"
-)
+st.set_page_config(page_title="Placement Predictor", page_icon="🎓")
 
-# Load the trained model
 @st.cache_resource
 def load_model():
-    with open("model.pkl", "rb") as f:
-        model = pickle.load(f)
-    return model
+    df = pd.read_csv("placement.csv")
+    df = df.iloc[:, 1:]          # drop unnamed index col
+    X = df.iloc[:, 0:2]          # cgpa, iq
+    y = df.iloc[:, -1]           # placement
+    clf = LogisticRegression()
+    clf.fit(X, y)
+    return clf
 
 model = load_model()
 
